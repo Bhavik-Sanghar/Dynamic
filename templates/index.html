@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Order</title>
+    <style>
+   /* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0; /* Set background color */
+}
+
+.container {
+    max-width: 400px; /* Adjust container width */
+    padding: 20px;
+    background-color: #fff; /* Set container background color */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow effect */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px; /* Add some spacing below heading */
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+select, input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Add smooth transition */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#priceResult {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    text-align: center; /* Center text inside price result */
+}
+
+#priceResult p {
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+}
+
+    </style>
+</head>
+<body>
+    <h1 id="head">Pizza Order</h1>
+    <form id="pizza-form">
+        <label for="pizza">Pizza:</label>
+        <select id="pizza" name="pizza">
+            <option value="The Hawaiian Pizza">The Hawaiian Pizza</option>
+            <option value="The Classic Deluxe Pizza">The Classic Deluxe Pizza</option>
+            <option value="The Five Cheese Pizza">The Five Cheese Pizza</option>
+            <option value="The Italian Supreme Pizza">The Italian Supreme Pizza</option>
+            <option value="The Mexicana Pizza">The Mexicana Pizza</option>
+            <option value="The Thai Chicken Pizza">The Thai Chicken Pizza</option>
+            <option value="The Prosciutto and Arugula Pizza">The Prosciutto and Arugula Pizza</option>
+            <option value="The Barbecue Chicken Pizza">The Barbecue Chicken Pizza</option>
+            <option value="The Greek Pizza">The Greek Pizza</option>
+            <option value="The Spinach Supreme Pizza">The Spinach Supreme Pizza</option>
+            <option value="The Green Garden Pizza">The Green Garden Pizza</option>
+            <option value="The Italian Capocollo Pizza">The Italian Capocollo Pizza</option>
+            <option value="The Spicy Italian Pizza">The Spicy Italian Pizza</option>
+            <option value="The Spinach Pesto Pizza">The Spinach Pesto Pizza</option>
+            <option value="The Vegetables + Vegetables Pizza">The Vegetables + Vegetables Pizza</option>
+            <option value="The Southwest Chicken Pizza">The Southwest Chicken Pizza</option>
+            <option value="The Gujarat Chicken Pizza">The Gujarat Chicken Pizza</option>
+            <option value="The Pepperoni Pizza">The Pepperoni Pizza</option>
+            <option value="The Chicken Pesto Pizza">The Chicken Pesto Pizza</option>
+            <option value="The Big Meat Pizza">The Big Meat Pizza</option>
+            <option value="The Soppressata Pizza">The Soppressata Pizza</option>
+            <option value="The Four Cheese Pizza">The Four Cheese Pizza</option>
+            <option value="The Napolitana Pizza">The Napolitana Pizza</option>
+            <option value="The Calabrese Pizza">The Calabrese Pizza</option>
+            <option value="The Italian Vegetables Pizza">The Italian Vegetables Pizza</option>
+            <option value="The Mediterranean Pizza">The Mediterranean Pizza</option>
+            <option value="The Pepper Salami Pizza">The Pepper Salami Pizza</option>
+            <option value="The Spinach and Feta Pizza">The Spinach and Feta Pizza</option>
+            <option value="The Sicilian Pizza">The Sicilian Pizza</option>
+            <option value="The Chicken Alfredo Pizza">The Chicken Alfredo Pizza</option>
+            <option value="The Pepperoni, Mushroom, and Peppers Pizza">The Pepperoni, Mushroom, and Peppers Pizza</option>
+            <option value="The Brie Carre Pizza">The Brie Carre Pizza</option>
+        </select><br><br>
+        
+
+        <label for="location">Location:</label>
+        <select id="location" name="location">
+            <option value="Kolkata">Kolkata</option>
+            <option value="Gujarat">Gujarat</option>
+            <option value="Channai">Channai</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi">Delhi</option>
+        </select><br><br>
+
+        <label for="size">Size:</label>
+        <select id="size" name="size">
+            <option value="S">Small</option>
+            <option value="M">Medium</option>
+            <option value="L">Large</option>
+        </select><br><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" min="1" value="1"><br><br>
+
+        <button type="button" id="calculate-btn">Calculate Price</button>
+    </form>
+
+    <div id="priceResult">
+        <!-- Prices will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById("calculate-btn").addEventListener("click", function() {
+            var formData = new FormData(document.getElementById("pizza-form"));
+            fetch("/calculate_price", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display normal and dynamic prices
+                const normalPrice = data.normal_price;
+                const dynamicPrice = data.dynamic_price;
+                const totalDynamicPrice = data.total_price_dynamic;
+                const totalQuantity = formData.get("quantity");
+
+                document.getElementById("priceResult").innerHTML = `
+                    <p>Normal Price: ₹${normalPrice.toFixed(2)}</p>
+                    <p>Dynamic Price: ₹${dynamicPrice.toFixed(2)}</p>
+                    <p>Total Dynamic Price (for ${totalQuantity} pizzas): ₹${totalDynamicPrice.toFixed(2)}</p>
+                `;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
